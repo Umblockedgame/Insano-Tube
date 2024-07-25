@@ -13,6 +13,9 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt && \
     pip install --upgrade yt-dlp
 
+# Instalar paquetes adicionales
+RUN pip install yt-dlp flask waitress requests urllib3 timeago
+
 # Copiar el resto del código de la aplicación
 COPY . .
 
