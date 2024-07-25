@@ -1,19 +1,23 @@
+# Usar una imagen base de Python
 FROM python:3.9-slim
 
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-COPY ./requirements.txt .
-
+# Instalar dependencias del sistema
 RUN apt-get update && \
-    apt-get install -y ffmpeg wget && \
-    wget https://bootstrap.pypa.io/get-pip.py && \
-    python3 get-pip.py && \
-    python3 -m pip install -r requirements.txt && \
-    python3 -m pip install --upgrade yt-dlp
+    apt-get install -y ffmpeg wget
 
+# Copiar el archivo requirements.txt e instalar las dependencias de Python
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt && \
+    pip install --upgrade yt-dlp
 
+# Copiar el resto del código de la aplicación
+COPY . .
+
+# Exponer el puerto que va a usar la aplicación
 EXPOSE 5000
 
+# Comando para ejecutar la aplicación
 CMD ["python3", "main.py"]
