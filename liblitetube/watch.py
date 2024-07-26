@@ -70,20 +70,6 @@ def GetTracks(video):
                 if o["format_id"] == "22":
                     streams["720p"].append({"size": "720", "url": o['url']})
 
-        # Extract 1080p video stream if available
-        if "137" in itags:
-            streams["1080p_video"] = []
-            for o in allstreams:
-                if o["format_id"] == "137":
-                    streams["1080p_video"].append({"size": "1080", "url": o['url']})
-
-        # Extract audio stream if available
-        if "140" in itags:
-            streams["audio"] = []
-            for o in allstreams:
-                if o["format_id"] == "140":
-                    streams["audio"].append({"size": "audio", "url": o['url']})
-
         # Add streams to data dictionary and return
         data["streams"] = streams
         return data
