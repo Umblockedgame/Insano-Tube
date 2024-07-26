@@ -4,6 +4,7 @@ import yt_dlp
 import timeago
 from yt_dlp.utils import DownloadError
 
+
 def GetTracks(video):
     """
     Function to get tracks from a YouTube video
@@ -69,27 +70,19 @@ def GetTracks(video):
                 if o["format_id"] == "22":
                     streams["720p"].append({"size": "720", "url": o['url']})
 
-        # Extract 1080p stream if available
+        # Extract 1080p video stream if available
         if "137" in itags:
-            video_1080p_url = None
+            streams["1080p_video"] = []
             for o in allstreams:
                 if o["format_id"] == "137":
-                    video_1080p_url = o['url']
-                    break
+                    streams["1080p_video"].append({"size": "1080", "url": o['url']})
 
-            # Use audio from 360p stream
-            if video_1080p_url and "18" in itags:
-                audio_360p_url = None
-                for o in allstreams:
-                    if o["format_id"] == "18":
-                        audio_360p_url = o['url']
-                        break
-                if audio_360p_url:
-                    streams["1080p"] = [{"size": "1080", "video_url": video_1080p_url, "audio_url": audio_360p_url}]
-                else:
-                    streams["1080p"] = [{"size": "1080", "video_url": video_1080p_url, "audio_url": None}]
-            else:
-                streams["1080p"] = [{"size": "1080", "video_url": video_1080p_url, "audio_url": None}]
+        # Extract audio stream if available
+        if "140" in itags:
+            streams["audio"] = []
+            for o in allstreams:
+                if o["format_id"] == "140":
+                    streams["audio"].append({"size": "audio", "url": o['url']})
 
         # Add streams to data dictionary and return
         data["streams"] = streams
@@ -99,6 +92,7 @@ def GetTracks(video):
         return {"error": "Could not download video information. Possible geographical restrictions."}
     except Exception as e:
         return {"error": str(e)}
+
 
 # Ejemplo de uso
 video_info = GetTracks('dQw4w9WgXcQ')
