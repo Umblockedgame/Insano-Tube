@@ -4,7 +4,6 @@ import yt_dlp
 import timeago
 from yt_dlp.utils import DownloadError
 
-
 def GetTracks(video):
     """
     Function to get tracks from a YouTube video
@@ -75,7 +74,14 @@ def GetTracks(video):
             streams["1080p"] = []
             for o in allstreams:
                 if o["format_id"] == "137":
-                    streams["1080p"].append({"size": "1080", "url": o['url']})
+                    video_url = o['url']
+                    # Find audio stream
+                    audio_stream = next((stream for stream in allstreams if stream['vcodec'] == 'none' and 'audio' in stream['format']), None)
+                    if audio_stream:
+                        audio_url = audio_stream['url']
+                        streams["1080p"].append({"size": "1080", "video_url": video_url, "audio_url": audio_url})
+                    else:
+                        streams["1080p"].append({"size": "1080", "video_url": video_url, "audio_url": None})
 
         # Add streams to data dictionary and return
         data["streams"] = streams
@@ -85,7 +91,6 @@ def GetTracks(video):
         return {"error": "Could not download video information. Possible geographical restrictions."}
     except Exception as e:
         return {"error": str(e)}
-
 
 # Ejemplo de uso
 video_info = GetTracks('dQw4w9WgXcQ')
