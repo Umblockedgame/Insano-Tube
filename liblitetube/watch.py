@@ -71,17 +71,25 @@ def GetTracks(video):
 
         # Extract 1080p stream if available
         if "137" in itags:
-            streams["1080p"] = []
+            video_1080p_url = None
             for o in allstreams:
                 if o["format_id"] == "137":
-                    video_url = o['url']
-                    # Find audio stream
-                    audio_stream = next((stream for stream in allstreams if stream['vcodec'] == 'none' and 'audio' in stream['format']), None)
-                    if audio_stream:
-                        audio_url = audio_stream['url']
-                        streams["1080p"].append({"size": "1080", "video_url": video_url, "audio_url": audio_url})
-                    else:
-                        streams["1080p"].append({"size": "1080", "video_url": video_url, "audio_url": None})
+                    video_1080p_url = o['url']
+                    break
+
+            # Use audio from 360p stream
+            if video_1080p_url and "18" in itags:
+                audio_360p_url = None
+                for o in allstreams:
+                    if o["format_id"] == "18":
+                        audio_360p_url = o['url']
+                        break
+                if audio_360p_url:
+                    streams["1080p"] = [{"size": "1080", "video_url": video_1080p_url, "audio_url": audio_360p_url}]
+                else:
+                    streams["1080p"] = [{"size": "1080", "video_url": video_1080p_url, "audio_url": None}]
+            else:
+                streams["1080p"] = [{"size": "1080", "video_url": video_1080p_url, "audio_url": None}]
 
         # Add streams to data dictionary and return
         data["streams"] = streams
